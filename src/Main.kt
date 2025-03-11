@@ -1,53 +1,61 @@
-
-fun initializeArray(columns: Int): IntArray {
-    val array = IntArray(columns)
+/**
+ * Помножити кожний елемент масиву С[i]m на суму елементів відповідного
+ * рядка матриці A[i,j]m,n.
+ */
+fun initializeArray(size: Int): IntArray {
+    val array = IntArray(size)
     for (i in array.indices) {
-        println("Enter ${i+1} element: ")
+        println("Enter ${i + 1} element")
         array[i] = readln().toInt()
     }
     return array
 }
-fun displayInvalidSize() = println("Error, the value can't be les or equal 0")
 
-fun setup() : Boolean {
+fun setSize(): Int {
+    val size = readln().toInt()
+    return if (size <= 0) {
+        println("Error, value can't be 0 or less, but was: $size")
+        setSize()
+    } else size
+}
+
+fun initializeTwoDArray(): Array<IntArray> {
     println("Enter count of rows")
-    val twoDArrayRows = readln().toInt()
+    val twoDArrayRows = setSize()
     println("Enter count of columns")
-    val twoDArrayColumns = readln().toInt()
-    if(twoDArrayRows <= 0 || twoDArrayColumns <=0) {
-        displayInvalidSize()
-        return false
-    }
-    val twoDArray= Array(twoDArrayRows) {
-        println("Fill ${it+1} row")
+    val twoDArrayColumns = setSize()
+    return Array(twoDArrayRows) {
+        println("Fill ${it + 1} row")
         initializeArray(twoDArrayColumns)
     }
+}
 
-    println("Enter size your simple array: ")
-    val simpleArraySize = readln().toInt()
-    if(simpleArraySize <=0) {
-        displayInvalidSize()
-        return false
-    }
-    val simpleArray = initializeArray(simpleArraySize)
+fun initializeSimpleArray(): IntArray {
+    println("Enter size of your array")
+    return initializeArray(setSize())
+}
 
-    println("Select row, that you want to multiply: ")
-    val selectedRow = readln().toInt() - 1
-    if(selectedRow !in 0..twoDArrayRows - 1) {
-        println("Error, matrix don't have row as: $selectedRow")
-        return false
-    }
+fun isHasRow(twoDArray: Array<IntArray>): Int {
+    println("Select row, that you want to multiply")
+    for (i in twoDArray.indices) println("Row ${i + 1}: ${twoDArray[i].joinToString()}")
+    val row = readln().toInt() - 1
+    return if (row !in 0..twoDArray.size) {
+        println("Error, matrix don't have row as $row")
+        isHasRow(twoDArray)
+    } else row
+}
 
+fun display(twoDArray: Array<IntArray>, simpleArray: IntArray, inputRow: Int) {
     println("Your matrix is: ${twoDArray.contentDeepToString()}")
     println("Your input array is: ${simpleArray.joinToString()}")
-    for(i in simpleArray.indices) {
-        println("Result of multiplying ${simpleArray[i]} to sum of ${twoDArray[selectedRow].joinToString()} is : ${simpleArray[i] * twoDArray[selectedRow].sum()}")
+    for (i in simpleArray.indices) {
+        println("Result of multiplying ${simpleArray[i]} to sum of ${twoDArray[inputRow].joinToString()} is: ${simpleArray[i] * twoDArray[inputRow].sum()}")
     }
-    return true
 }
 
 fun main() {
-    if(!setup()) {
-        main()
-    }
+    val twoDArray = initializeTwoDArray()
+    val simpleArray = initializeSimpleArray()
+    val inputRow = isHasRow(twoDArray)
+    display(twoDArray, simpleArray, inputRow)
 }
